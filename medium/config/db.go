@@ -37,6 +37,7 @@ func SetUpDb() (*sql.DB, error) {
 		fmt.Println("error connecting to db", err)
 		return nil, err
 	}
+	fmt.Println("format dsn for db", cfg.FormatDSN())
 
 	if err := db.Ping(); err != nil {
 		fmt.Println("error pinging db")
