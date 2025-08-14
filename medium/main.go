@@ -18,9 +18,14 @@ func main() {
 	uc := controller.NewController(db)
 	ur := router.NewRouter(uc)
 
+	bc := controller.NewBlogController(db)
+	br := router.NewBlogRouter(bc)
+
+	mainRouter := router.SetupRouter(ur, br)
+
 	server := http.Server{
 		Addr:    ":5000",
-		Handler: router.SetupRouter(ur),
+		Handler: mainRouter,
 	}
 	fmt.Println("server started at port ", server.Addr)
 	server.ListenAndServe()

@@ -1,5 +1,6 @@
 package dto
 
+// todo add validation here
 type SignUpUser struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
