@@ -6,6 +6,7 @@ import (
 	"medium/dto"
 	"medium/util"
 	"net/http"
+	"strconv"
 )
 
 type BlogController interface {
@@ -27,11 +28,34 @@ func NewBlogController(_database *sql.DB) BlogController {
 }
 
 func (bl *BlogControllerImpl) CreateBlog(w http.ResponseWriter, r *http.Request) {
-	var blogData dto.CreateBlogDto
 
-	if err := util.ReadJson(r, &blogData); err != nil {
-		fmt.Println("error reading json body", err)
+	userIdStr := r.FormValue("userId")
+	userId, err := strconv.Atoi(userIdStr)
+
+	if err != nil {
+		fmt.Println("error converting userId to int")
 	}
+
+	blogData := dto.CreateBlogDto{
+		UserId:      userId,
+		BlogTitle:   r.FormValue("blogTitle"),
+		BlogContent: r.FormValue("blogContent"),
+	}
+
+	// if err := util.ReadJson(r, &blogData); err != nil {
+	// 	fmt.Println("error reading json body", err)
+	// }
+
+	// form data for image upload backend
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		fmt.Println("error parsing form data", err)
+	}
+
+	file, _, err := r.FormFile("blogImage")
+
+	imageUrl := util.UploadImage(file)
+
+	blogData.BlogImage = imageUrl
 
 	query := "INSERT INTO Blogs (userId , blogTitle , blogImage , blogContent) VALUES( ? , ? , ? , ?) "
 
